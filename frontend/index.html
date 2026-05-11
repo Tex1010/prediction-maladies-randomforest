@@ -13,9 +13,92 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 
+<!-- HISTORIQUE MODAL -->
+<div class="history-modal" id="historyModal">
+
+    <div class="history-content">
+
+        <!-- HEADER -->
+        <div class="history-header">
+
+            <h2>Historique des analyses</h2>
+
+            <button class="close-history" id="closeHistory">
+                ✕
+            </button>
+
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Date</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Sexe</th>
+                        <th>Âge</th>
+
+                        <th>Température</th>
+                        <th>Tension</th>
+                        <th>Poids</th>
+
+                        <th>Fièvre</th>
+                        <th>Paludisme</th>
+                        <th>Grippe</th>
+                        <th>Anémie</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="historyTable">
+
+                    <tr>
+
+                        <td>11/05/2026 14:20</td>
+                        <td>Rakoto</td>
+                        <td>Jean</td>
+                        <td>M</td>
+                        <td>25</td>
+
+                        <td>38.5°C</td>
+                        <td>12/8</td>
+                        <td>70kg</td>
+
+                        <td>24%</td>
+                        <td>78%</td>
+                        <td>56%</td>
+                        <td>12%</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
 <body>
 
     <div class="container">
+        <label>Date d'analyse</label>
+            <input type="text" id="analysisDate"readonly>
+
+        <button type="button" class="history-btn" id="openHistory">
+
+            Historique des analyses
+
+        </button>
 
         <!-- HEADER -->
         <div class="header">
@@ -321,6 +404,45 @@
             if(!customSelect.contains(e.target)){
                 customSelect.classList.remove("active");
             }
+
+        });
+
+        /* DATE AUTO */
+        function updateDateTime(){
+
+            const now = new Date();
+
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            const formatted =
+            `${day}/${month}/${year} ${hours}:${minutes}`;
+
+            document.getElementById("analysisDate").value = formatted;
+        }
+
+        updateDateTime();
+
+        const historyModal =
+        document.getElementById("historyModal");
+
+        document
+        .getElementById("openHistory")
+        .addEventListener("click", () => {
+
+            historyModal.classList.add("active");
+
+        });
+
+        document
+        .getElementById("closeHistory")
+        .addEventListener("click", () => {
+
+            historyModal.classList.remove("active");
 
         });
 
