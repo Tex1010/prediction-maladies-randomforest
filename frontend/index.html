@@ -43,6 +43,10 @@
                     🧠 Groupe 11
                 </div>
 
+                <button type="button" class="theme-toggle" id="themeToggle">
+                    ☀️ Mode clair
+                </button>
+
             </div>
 
             <form>
@@ -245,6 +249,24 @@
         </div>
 
     </div>
+
+    <script>
+
+        const toggleBtn = document.getElementById("themeToggle");
+
+        toggleBtn.addEventListener("click", () => {
+
+            document.body.classList.toggle("light-mode");
+
+            if(document.body.classList.contains("light-mode")){
+                toggleBtn.innerHTML = "🌙 Mode sombre";
+            }else{
+                toggleBtn.innerHTML = "☀️ Mode clair";
+            }
+
+        });
+
+    </script>
 
 </body>
 </html>

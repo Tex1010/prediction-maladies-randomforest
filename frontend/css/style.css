@@ -457,3 +457,137 @@ button:hover{
     }
 
 }
+
+/* ------------------------------------------------------------------------- */
+
+/* THEME BUTTON */
+.theme-toggle{
+    padding:10px 18px !important;
+
+    border-radius:30px !important;
+
+    background:rgba(255,255,255,0.06) !important;
+
+    border:1px solid rgba(255,255,255,0.08) !important;
+
+    color:#e2e8f0 !important;
+
+    font-size:13px !important;
+    font-weight:600 !important;
+
+    cursor:pointer;
+
+    transition:0.25s;
+
+    width:auto !important;
+    margin-top:0 !important;
+
+    box-shadow:none !important;
+}
+
+.theme-toggle:hover{
+    background:rgba(255,255,255,0.10) !important;
+
+    transform:translateY(-1px);
+}
+
+/* ---------------------------------------------------------------------------------------- */
+
+/* LIGHT MODE */
+body.light-mode{
+
+    background:
+    radial-gradient(circle at top left, rgba(20,184,166,0.10), transparent 25%),
+    radial-gradient(circle at bottom right, rgba(59,130,246,0.10), transparent 25%),
+    #f1f5f9;
+
+    color:#0f172a;
+}
+
+/* HEADER */
+body.light-mode .header h1{
+    color:#0f172a;
+}
+
+body.light-mode .header p{
+    color:#475569;
+}
+
+/* CARD */
+body.light-mode .card{
+    background:rgba(255,255,255,0.75);
+
+    border:1px solid rgba(15,23,42,0.08);
+
+    box-shadow:
+    0 10px 40px rgba(15,23,42,0.08);
+}
+
+/* TITLES */
+body.light-mode .section-header h2{
+    color:#0f172a;
+}
+
+/* LABELS */
+body.light-mode .input-group label{
+    color:#334155;
+}
+
+/* INPUTS */
+body.light-mode input{
+    background:white;
+
+    color:#0f172a;
+
+    border:1px solid #dbeafe;
+}
+
+body.light-mode input::placeholder{
+    color:#94a3b8;
+}
+
+/* GENDER */
+body.light-mode .gender-switch{
+    background:#e2e8f0;
+}
+
+body.light-mode .gender-switch label{
+    color:#334155;
+}
+
+/* SYMPTOMS */
+body.light-mode .symptom-pill span{
+    background:white;
+
+    color:#334155;
+
+    border:1px solid #dbeafe;
+}
+
+/* RESULT */
+body.light-mode .result-box{
+    background:rgba(255,255,255,0.65);
+
+    border:1px solid rgba(15,23,42,0.06);
+}
+
+body.light-mode .result-header h2{
+    color:#0f172a;
+}
+
+body.light-mode .result-header p{
+    color:#475569;
+}
+
+body.light-mode .disease-info{
+    color:#0f172a;
+}
+
+/* BUTTON THEME */
+body.light-mode .theme-toggle{
+    background:white !important;
+
+    color:#0f172a !important;
+
+    border:1px solid #cbd5e1 !important;
+}
