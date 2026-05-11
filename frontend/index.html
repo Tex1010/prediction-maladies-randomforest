@@ -39,13 +39,17 @@
                     🟢 Système IA actif
                 </div>
 
-                <div class="group-badge">
-                    🧠 Groupe 11
-                </div>
+                <div class="top-right">
 
-                <button type="button" class="theme-toggle" id="themeToggle">
-                    ☀️ Mode clair
-                </button>
+                    <div class="group-badge">
+                        🧠 Groupe 11
+                    </div>
+
+                    <button type="button" class="theme-toggle" id="themeToggle">
+                        ☀️
+                    </button>
+
+                </div>
 
             </div>
 
@@ -254,14 +258,36 @@
 
         const toggleBtn = document.getElementById("themeToggle");
 
+        /* LOAD SAVED THEME */
+        if(localStorage.getItem("theme") === "light"){
+
+            document.body.classList.add("light-mode");
+
+            toggleBtn.innerHTML = "🌙 ";
+
+        }else{
+
+            toggleBtn.innerHTML = "☀️";
+
+        }
+
+        /* TOGGLE THEME */
         toggleBtn.addEventListener("click", () => {
 
             document.body.classList.toggle("light-mode");
 
             if(document.body.classList.contains("light-mode")){
-                toggleBtn.innerHTML = "🌙 Mode sombre";
+
+                localStorage.setItem("theme", "light");
+
+                toggleBtn.innerHTML = "🌙";
+
             }else{
-                toggleBtn.innerHTML = "☀️ Mode clair";
+
+                localStorage.setItem("theme", "dark");
+
+                toggleBtn.innerHTML = "☀️";
+
             }
 
         });
