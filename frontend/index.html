@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta 
+    name="viewport" 
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Prédiction des maladies</title>
 
@@ -76,15 +78,22 @@
                         </div>
 
                         <div class="input-group">
+
                             <label>Sexe</label>
 
-                            <div class="gender-switch">
+                            <div class="custom-select" id="genderSelect">
 
-                                <input type="radio" id="male" name="gender" checked>
-                                <label for="male">👨 Masculin</label>
+                                <div class="select-selected" id="selectedGender">
+                                    Sélectionner le sexe
+                                </div>
 
-                                <input type="radio" id="female" name="gender">
-                                <label for="female">👩 Féminin</label>
+                                <div class="select-options">
+
+                                    <div class="select-option">Masculin</div>
+
+                                    <div class="select-option">Féminin</div>
+
+                                </div>
 
                             </div>
 
@@ -255,7 +264,8 @@
     </div>
 
     <script>
-
+        const customSelect = document.getElementById("genderSelect");
+        const selected = document.getElementById("selectedGender");
         const toggleBtn = document.getElementById("themeToggle");
 
         /* LOAD SAVED THEME */
@@ -288,6 +298,28 @@
 
                 toggleBtn.innerHTML = "☀️";
 
+            }
+
+        });
+
+        customSelect.addEventListener("click", () => {
+            customSelect.classList.toggle("active");
+        });
+
+        document.querySelectorAll(".select-option").forEach(option => {
+
+            option.addEventListener("click", () => {
+
+                selected.innerHTML = option.innerHTML;
+
+            });
+
+        });
+
+        window.addEventListener("click", (e) => {
+
+            if(!customSelect.contains(e.target)){
+                customSelect.classList.remove("active");
             }
 
         });
