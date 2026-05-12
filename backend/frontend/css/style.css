@@ -1,0 +1,709 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins', sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:
+    radial-gradient(circle at top left, rgba(20,184,166,0.15), transparent 25%),
+    radial-gradient(circle at bottom right, rgba(59,130,246,0.15), transparent 25%),
+    #0f172a;
+
+    color:white;
+
+    display:flex;
+    justify-content:center;
+
+    padding:35px 20px;
+}
+
+/* CONTAINER */
+.container{
+    width:100%;
+    max-width:1400px;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-bottom:28px;
+}
+
+.logo-box{
+    width:65px;
+    height:65px;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,0.06);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(10px);
+}
+
+.logo-box img{
+    width:42px;
+}
+
+.header h1{
+    font-size:32px;
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.header p{
+    color:#94a3b8;
+    font-size:14px;
+}
+
+/* CARD */
+.card{
+    background:rgba(15,23,42,0.75);
+
+    border:1px solid rgba(255,255,255,0.06);
+
+    border-radius:30px;
+
+    padding:35px;
+
+    backdrop-filter:blur(20px);
+
+    box-shadow:
+    0 10px 40px rgba(0,0,0,0.35);
+
+    overflow:hidden;
+}
+
+/* TOP BAR */
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:35px;
+}
+
+.status{
+    background:rgba(34,197,94,0.12);
+    color:#4ade80;
+
+    border:1px solid rgba(34,197,94,0.25);
+
+    padding:8px 14px;
+    border-radius:30px;
+
+    font-size:12px;
+    font-weight:600;
+
+    white-space:nowrap;
+}
+
+.group-badge{
+    background:rgba(45,212,191,0.12);
+    color:#5eead4;
+
+    border:1px solid rgba(45,212,191,0.25);
+
+    padding:8px 14px;
+    border-radius:30px;
+
+    font-size:12px;
+    font-weight:600;
+
+    white-space:nowrap;
+}
+
+.top-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    flex-wrap:nowrap;
+}
+
+/* SECTION */
+.section{
+    margin-bottom:35px;
+}
+
+.section-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    margin-bottom:18px;
+}
+
+.section-icon{
+    font-size:22px;
+}
+
+.section-header h2{
+    font-size:21px;
+    color:#d1fae5;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    gap:18px;
+}
+
+.grid-4{
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+}
+
+.grid-3{
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+}
+
+/* INPUT */
+.input-group label{
+    display:block;
+    margin-bottom:8px;
+
+    color:#cbd5e1;
+
+    font-size:14px;
+    font-weight:500;
+}
+
+input{
+    width:100%;
+
+    padding:15px 16px;
+
+    border:none;
+    outline:none;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,0.05);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    color:white;
+
+    font-size:14px;
+
+    transition:0.25s;
+}
+
+input::placeholder{
+    color:#64748b;
+}
+
+input:focus{
+    border-color:#14b8a6;
+
+    box-shadow:
+    0 0 0 4px rgba(20,184,166,0.12);
+}
+
+/* SEXE */
+/* CUSTOM SELECT */
+.custom-select{
+    position:relative;
+    width:100%;
+}
+
+/* SELECT BUTTON */
+.select-selected{
+
+    background:rgba(255,255,255,0.05);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    padding:15px 18px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    transition:0.25s;
+
+    color:#e2e8f0;
+
+    position:relative;
+
+    user-select:none;
+}
+
+/* ARROW */
+.select-selected::after{
+    content:"⌄";
+
+    position:absolute;
+
+    right:18px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#94a3b8;
+
+    font-size:14px;
+}
+
+/* HOVER */
+.select-selected:hover{
+    border-color:#14b8a6;
+}
+
+/* OPTIONS */
+.select-options{
+
+    position:absolute;
+
+    top:110%;
+    left:0;
+
+    width:100%;
+
+    background:#1e293b;
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+    display:none;
+
+    z-index:1000;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* OPTION */
+.select-option{
+
+    padding:14px 18px;
+
+    cursor:pointer;
+
+    transition:0.2s;
+
+    color:#e2e8f0;
+}
+
+.select-option:hover{
+    background:rgba(20,184,166,0.15);
+
+    color:#5eead4;
+}
+
+/* ACTIVE */
+.custom-select.active .select-options{
+    display:block;
+}
+
+/* SYMPTOMES */
+.symptoms-container{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+}
+
+.symptom-pill input{
+    display:none;
+}
+
+.symptom-pill span{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    padding:13px 18px;
+
+    border-radius:50px;
+
+    background:rgba(255,255,255,0.05);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    color:#cbd5e1;
+
+    cursor:pointer;
+
+    transition:0.25s;
+
+    font-size:14px;
+    font-weight:500;
+}
+
+.symptom-pill span:hover{
+    border-color:#14b8a6;
+
+    transform:translateY(-2px);
+}
+
+.symptom-pill input:checked + span{
+    background:#14b8a6;
+    color:white;
+
+    border-color:#14b8a6;
+
+    box-shadow:
+    0 6px 20px rgba(20,184,166,0.30);
+}
+
+/* BUTTON */
+button{
+    width:100%;
+
+    margin-top:10px;
+
+    padding:17px;
+
+    border:none;
+    outline:none;
+
+    border-radius:18px;
+
+    background:linear-gradient(90deg,#14b8a6,#06b6d4);
+
+    color:white;
+
+    font-size:16px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 10px 25px rgba(6,182,212,0.25);
+}
+
+/* RESULT BOX */
+.result-box{
+    margin-top:35px;
+
+    background:rgba(255,255,255,0.04);
+
+    border:1px solid rgba(255,255,255,0.06);
+
+    border-radius:25px;
+
+    padding:30px;
+}
+
+/* RESULT HEADER */
+.result-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:28px;
+}
+
+.result-header h2{
+    font-size:24px;
+    margin-bottom:5px;
+}
+
+.result-header p{
+    color:#94a3b8;
+    font-size:14px;
+}
+
+.ai-badge{
+    width:55px;
+    height:55px;
+
+    border-radius:18px;
+
+    background:rgba(20,184,166,0.15);
+
+    border:1px solid rgba(20,184,166,0.25);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    color:#5eead4;
+
+    font-weight:700;
+    font-size:18px;
+}
+
+/* DISEASE */
+.disease{
+    margin-bottom:24px;
+}
+
+.disease-info{
+    display:flex;
+    justify-content:space-between;
+
+    margin-bottom:10px;
+
+    font-size:15px;
+    font-weight:500;
+}
+
+/* PROGRESS */
+.progress{
+    width:100%;
+    height:12px;
+
+    background:rgba(255,255,255,0.05);
+
+    border-radius:30px;
+
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    border-radius:30px;
+}
+
+/* COLORS */
+.low{
+    background:linear-gradient(90deg,#22c55e,#4ade80);
+}
+
+.medium{
+    background:linear-gradient(90deg,#f59e0b,#fbbf24);
+}
+
+.high{
+    background:linear-gradient(90deg,#ef4444,#f87171);
+}
+
+/* RESPONSIVE AM Telephone lest e ---------------------------------------------- */
+@media(max-width:900px){
+
+    body{
+        padding:20px 12px;
+    }
+
+    .header{
+        align-items:flex-start;
+    }
+
+    .header h1{
+        font-size:20px;
+    }
+
+    .header p{
+        font-size:13px;
+    }
+
+    .card{
+        padding:20px;
+        border-radius:24px;
+    }
+
+    .top-bar{
+        align-items:center;
+    }
+
+    .status{
+        font-size:11px;
+        padding:7px 12px;
+    }
+
+    .group-badge{
+        font-size:11px;
+        padding:7px 12px;
+    }
+
+    .theme-toggle{
+        font-size:11px !important;
+        padding:7px 12px !important;
+    }
+
+    .top-right{
+        gap:8px;
+    }
+
+    .section-header h2{
+        font-size:18px;
+    }
+
+    .gender-switch{
+        width:100%;
+    }
+
+    .gender-switch label{
+        flex:1;
+        text-align:center;
+    }
+
+    .symptoms-container{
+        gap:10px;
+    }
+
+    .symptom-pill span{
+        font-size:13px;
+        padding:11px 15px;
+    }
+
+    .result-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+}
+
+/* ------------------------------------------------------------------------- */
+
+/* THEME BUTTON */
+.theme-toggle{
+    padding:8px 14px !important;
+
+    border-radius:30px !important;
+
+    background:rgba(255,255,255,0.06) !important;
+
+    border:1px solid rgba(255,255,255,0.08) !important;
+
+    color:#e2e8f0 !important;
+
+    font-size:12px !important;
+    font-weight:600 !important;
+
+    cursor:pointer;
+
+    transition:0.25s;
+
+    width:auto !important;
+
+    margin-top:0 !important;
+
+    white-space:nowrap;
+
+    flex-shrink:0;
+
+    box-shadow:none !important;
+}
+
+.theme-toggle:hover{
+    background:rgba(255,255,255,0.10) !important;
+
+    transform:translateY(-1px);
+}
+
+/* ---------------------------------------------------------------------------------------- */
+
+/* LIGHT MODE */
+body.light-mode{
+
+    background:
+    radial-gradient(circle at top left, rgba(20,184,166,0.10), transparent 25%),
+    radial-gradient(circle at bottom right, rgba(59,130,246,0.10), transparent 25%),
+    #f1f5f9;
+
+    color:#0f172a;
+}
+
+/* HEADER */
+body.light-mode .header h1{
+    color:#0f172a;
+}
+
+body.light-mode .header p{
+    color:#475569;
+}
+
+/* CARD */
+body.light-mode .card{
+    background:rgba(255,255,255,0.75);
+
+    border:1px solid rgba(15,23,42,0.08);
+
+    box-shadow:
+    0 10px 40px rgba(15,23,42,0.08);
+}
+
+/* TITLES */
+body.light-mode .section-header h2{
+    color:#0f172a;
+}
+
+/* LABELS */
+body.light-mode .input-group label{
+    color:#334155;
+}
+
+/* INPUTS */
+body.light-mode input{
+    background:white;
+
+    color:#0f172a;
+
+    border:1px solid #dbeafe;
+}
+
+body.light-mode input::placeholder{
+    color:#94a3b8;
+}
+
+/* GENDER */
+body.light-mode .gender-switch{
+    background:#e2e8f0;
+}
+
+body.light-mode .gender-switch label{
+    color:#334155;
+}
+
+/* SYMPTOMS */
+body.light-mode .symptom-pill span{
+    background:white;
+
+    color:#334155;
+
+    border:1px solid #dbeafe;
+}
+
+/* RESULT */
+body.light-mode .result-box{
+    background:rgba(255,255,255,0.65);
+
+    border:1px solid rgba(15,23,42,0.06);
+}
+
+body.light-mode .result-header h2{
+    color:#0f172a;
+}
+
+body.light-mode .result-header p{
+    color:#475569;
+}
+
+body.light-mode .disease-info{
+    color:#0f172a;
+}
+
+/* BUTTON THEME */
+body.light-mode .theme-toggle{
+    background:white !important;
+
+    color:#0f172a !important;
+
+    border:1px solid #cbd5e1 !important;
+}

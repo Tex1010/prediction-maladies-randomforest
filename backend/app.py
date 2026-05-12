@@ -2,6 +2,8 @@ import os  # <--- INDISPENSABLE pour utiliser os.path
 from flask import Flask
 from flask_cors import CORS
 from models import db
+from flask_migrate import Migrate
+from routes.patient_routes import patient_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -18,12 +20,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # --- INITIALISATION ---
 db.init_app(app)
+migrate = Migrate(app, db, render_as_batch=True)
 
-with app.app_context():
-    # SQLAlchemy va scanner tes fichiers dans le dossier /models 
-    # et créer les tables s'il trouve les classes
-    db.create_all()
-    print(f"✅ Succès ! Base de données créée ici : {app.config['SQLALCHEMY_DATABASE_URI']}")
+app.register_blueprint(patient_bp)
 
 if __name__ == '__main__':
     app.run(debug=True)
