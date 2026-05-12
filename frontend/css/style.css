@@ -571,9 +571,9 @@ button:hover{
         width:100%;
     }
 
-    .history-btn{
-        width:100%;
-    }
+    .date-box{
+    flex:1;
+}
 
 }
 
