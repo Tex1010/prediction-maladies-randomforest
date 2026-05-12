@@ -26,6 +26,7 @@ body{
 .container{
     width:100%;
     max-width:1400px;
+    overflow:visible;
 }
 
 /* HEADER */
@@ -88,13 +89,34 @@ body{
 
 /* TOP BAR */
 .top-bar{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:999;
+
     display:flex;
     justify-content:space-between;
     align-items:center;
 
     gap:12px;
 
-    margin-bottom:35px;
+    margin-bottom:25px;
+
+    padding:14px 18px;
+
+    border-radius:20px;
+
+    backdrop-filter:blur(18px);
+
+    background:
+    rgba(15,23,42,0.82);
+
+    border:1px solid rgba(255,255,255,0.06);
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,0.18);
 }
 
 .status{
