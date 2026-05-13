@@ -4,6 +4,7 @@ from flask_cors import CORS
 from models import db
 from flask_migrate import Migrate
 from routes.patient_routes import patient_bp
+from routes.full_routes import full_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -23,6 +24,7 @@ db.init_app(app)
 migrate = Migrate(app, db, render_as_batch=True)
 
 app.register_blueprint(patient_bp)
+app.register_blueprint(full_bp)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,5 +1,11 @@
-__pycache__/
-instance/
-*.db
+# Environnement virtuel
 venv/
-.env
+__pycache__/
+*.pyc
+
+# Base de données (on ne versionne pas les données locales)
+instance/maladies.db
+
+# Modèle IA (Optionnel : si tu veux que ton équipe le génère, ignore-le. 
+# Sinon, garde-le pour qu'ils puissent tester tout de suite)
+# model_data/*.pkl

@@ -1,8 +1,8 @@
-"""Initialisation des tables medicales
+"""Reset des tables
 
-Revision ID: 75fec394fcc0
+Revision ID: 7852069d8983
 Revises: 
-Create Date: 2026-05-12 11:48:34.689774
+Create Date: 2026-05-12 21:30:56.452076
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '75fec394fcc0'
+revision = '7852069d8983'
 down_revision = None
 branch_labels = None
 depends_on = None
