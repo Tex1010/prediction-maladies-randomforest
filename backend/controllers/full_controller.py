@@ -49,25 +49,39 @@ def create_full_consultation():
         # Obtenir les probabilités (pourcentages)
         # predict_proba renvoie une liste de tableaux (un par maladie)
         probas = model.predict_proba(input_data)
+
+       
         
         # Extraction des probabilités du "classe 1" (Malade)
         # L'index [0][0][1] dépend de la structure de sortie de scikit-learn
-        res_fievre = round(probas[0][0][1] * 100, 2)
-        res_palu = round(probas[1][0][1] * 100, 2)
-        res_grippe = round(probas[2][0][1] * 100, 2)
-        res_anemie = round(probas[3][0][1] * 100, 2)
+       
+        scores = {
+            "la fièvre" : round(probas[0][0][1] * 100, 2),
+            "la paludisme" : round(probas[1][0][1] * 100, 2),
+            "la grippe" : round(probas[2][0][1] * 100, 2),
+            "l'anemie" : round(probas[3][0][1] * 100, 2)
+        }
 
-        # 4. Insertion RESULTAT
-        score_global = (res_fievre + res_palu + res_grippe + res_anemie) / 4
-        niveau = "Élevé" if score_global > 50 else "Moyen" if score_global > 20 else "Faible"
+        # D. GÉNÉRATION DU MESSAGE DE DIAGNOSTIC UNIQUE
+        # On ne liste que les maladies ayant un risque significatif (> 25%)
+        risques_detectes = [f"{m} ({s}%)" for m, s in scores.items() if s > 25]
+
+        if not risques_detectes:
+            message_unique = "Analyse terminée : Aucun risque majeur détecté. Les paramètres cliniques sont stables."
+        else:
+            liste_maladies = ", ".join(risques_detectes)
+            message_unique = f"Analyse terminée : Le patient présente des risques significatifs pour {liste_maladies}. Une consultation médicale est recommandée."
+        
+
+       
 
         new_result = Resultat(
             id_patient=new_patient.id_patient,
-            risque_fievre=res_fievre,
-            risque_paludisme=res_palu,
-            risque_grippe=res_grippe,
-            risque_anemie=res_anemie,
-            niveau_risque_global=niveau
+            risque_fievre=scores["la fièvre"],
+            risque_paludisme=scores["la paludisme"],
+            risque_grippe=scores["la grippe"],
+            risque_anemie=scores["l'anemie"],
+            niveau_risque_global=message_unique
         )
         db.session.add(new_result)
 
@@ -76,14 +90,9 @@ def create_full_consultation():
 
         return jsonify({
             "status": "success",
-            "patient_id": new_patient.id_patient,
-            "predictions": {
-                "fievre": res_fievre,
-                "paludisme": res_palu,
-                "grippe": res_grippe,
-                "anemie": res_anemie,
-                "niveau": niveau
-            }
+            "message": message_unique,
+            "id_patient": new_patient.id_patient,
+            "id_resultat": new_result.id_resultat
         }), 201
 
     except Exception as e:
