@@ -126,3 +126,105 @@ def get_consultation(patient_id):
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+def update_consultation_data(patient_id):
+    data = request.json
+    try:
+        patient = Patient.query.get(patient_id)
+        if not patient: 
+            return jsonify({'error': "Patient non trouvé"}), 404
+        
+        last_params = Parametre.query.filter_by(id_patient=patient_id).order_by(Parametre.id_parametre.desc()).first()
+
+        if 'nom' in data: patient.nom = data['nom']
+        if 'prenom' in data: patient.prenom = data['prenom']
+        if 'sexe' in data: patient.sexe = data['sexe']
+        if 'date_naissance' in data: patient.date_naissance = data['date_naissance']
+        if 'adresse' in data: patient.adresse = data['adresse']
+        if 'telephone' in data: patient.telephone = data['telephone']
+
+        if last_params:
+            if 'age' in data: last_params.age = int(data['age'])
+            if 'tension_arterielle' in data: last_params.tension_arterielle = int(data['tension_arterielle'])
+            if 'temperature' in data: last_params.temperature = int(data['temperature'])
+            if 'poids' in data: last_params.poids = int(data['poids'])
+            if 'taille' in data: last_params.taille = int(data['taille'])
+            if 'fatigue' in data: last_params.fatigue = bool(data['fatigue'])
+            if 'frissons' in data: last_params.frissons = bool(data['frissons'])
+            if 'toux' in data: last_params.toux = bool(data['toux'])
+            if 'maux_tete' in data: last_params.maux_tete = bool(data['maux_tete'])
+            if 'vomissement' in data: last_params.vomissement = bool(data['vomissement'])
+        
+        db.session.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": "Informations du patient et paramètre mis à jour"
+        }), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+    
+def get_all_consultations():
+    try:
+        results = Resultat.query.order_by(Resultat.date_resultat.desc()).all()
+        output = []
+
+        for r in results:
+            p = Parametre.query.filter_by(id_patient=r.id_patient).order_by(Parametre.id_parametre.desc()).first()
+
+            output.append({
+                "id_resultat": r.id_resultat,
+                "date": r.date_resultat.strftime("%d/%m/%Y %H:%M") if r.date_resultat else None,
+                "risque_fievre": r.risque_fievre,
+                "risque_paludisme": r.risque_paludisme,
+                "risque_grippe": r.risque_grippe,
+                "risque_anemie": r.risque_anemie,
+                # On ne ferme pas l'accolade ici !
+
+                "patient": {
+                    "id": r.patient.id_patient,
+                    "nom": r.patient.nom,
+                    "prenom": r.patient.prenom,
+                    "sexe": r.patient.sexe,
+                    "telephone": r.patient.telephone,
+                    "adresse": r.patient.adresse
+                },
+
+                "parametres": {
+                    "age": p.age if p else None,
+                    "tension_arterielle": p.tension_arterielle if p else None,
+                    "temperature": p.temperature if p else None,
+                    "poids": p.poids if p else None,
+                    "taille": p.taille if p else None,
+                    "fatigue": p.fatigue if p else None,
+                    "frissons": p.frissons if p else None,
+                    "toux": p.toux if p else None,
+                    "maux_tete": p.maux_tete if p else None,
+                    "vomissement": p.vomissement if p else None,
+                },
+                "diagnostic": r.niveau_risque_global
+            }) # On ferme l'accolade ici, à la fin de l'objet
+            
+        return jsonify(output), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+def delete_consultation(id_resultat):
+    try:
+        resultat = Resultat.query.get(id_resultat)
+
+        if not resultat:
+            return jsonify({"error": "Résultat non trouvé"}), 404
+        
+        db.session.delete(resultat)
+        db.session.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": f"La consultation {id_resultat} a été supprimée avec succès"
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
