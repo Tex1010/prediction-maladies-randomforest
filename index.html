@@ -2,463 +2,643 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta 
-    name="viewport" 
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <title>Prédiction des maladies</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prédiction des maladies - Centre Médical IA</title>
     <link rel="icon" type="image/png" href="frontend/assets/hospital.png">
-
     <link rel="stylesheet" href="frontend/css/style.css">
+    <style>
+        .diagnostic-message {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        body.light-mode .diagnostic-message {
+            background: rgba(0,0,0,0.03);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .btn-update, .btn-delete {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        .btn-update {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-update:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-delete:hover {
+            background-color: #da190b;
+            transform: scale(1.05);
+        }
+        
+        .update-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .update-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .update-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        body.light-mode .update-modal-content {
+            background: white;
+            color: #333;
+        }
+        body:not(.light-mode) .update-modal-content {
+            background: #2d2d2d;
+            color: #eee;
+        }
+        .update-modal-content h3 {
+            margin-bottom: 20px;
+        }
+        .update-modal-content .input-group {
+            margin-bottom: 15px;
+        }
+        .update-modal-content .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .update-modal-content .input-group input,
+        .update-modal-content .input-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-cancel {
+            background-color: #999;
+            color: white;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        /* Ajustement pour la grille avec plus de champs */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+    </style>
 </head>
-
-<!-- HISTORIQUE MODAL -->
-<div class="history-modal" id="historyModal">
-
-    <div class="history-content">
-
-        <!-- HEADER -->
-        <div class="history-header">
-
-            <h2>Historique des analyses</h2>
-
-            <button class="close-history" id="closeHistory">
-                ✕
-            </button>
-
-        </div>
-
-        <!-- TABLE -->
-        <div class="table-container">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>Date</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Sexe</th>
-                        <th>Âge</th>
-
-                        <th>Température</th>
-                        <th>Tension</th>
-                        <th>Poids</th>
-
-                        <th>Fièvre</th>
-                        <th>Paludisme</th>
-                        <th>Grippe</th>
-                        <th>Anémie</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="historyTable">
-
-                    <tr>
-
-                        <td>11/05/2026 14:20</td>
-                        <td>Rakoto</td>
-                        <td>Jean</td>
-                        <td>M</td>
-                        <td>25</td>
-
-                        <td>38.5°C</td>
-                        <td>12/8</td>
-                        <td>70kg</td>
-
-                        <td>24%</td>
-                        <td>78%</td>
-                        <td>56%</td>
-                        <td>12%</td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-</div><br><br>
-
 <body>
 
-    <div class="container">
-        <!-- TOP BAR -->
-            <div class="top-bar">
-
-                <div class="status">
-                    🟢 Système IA actif
-                </div>
-
-                <div class="top-right">
-
-                    <div class="group-badge">
-                        🧠 Groupe 11
-                    </div>
-
-                    <button type="button" class="theme-toggle" id="themeToggle">
-                        ☀️
-                    </button>
-
-                </div>
-
-            </div>
-            
-        <!-- TOP ACTIONS -->
-            <div class="top-actions">
-
-                <!-- DATE -->
-                <div class="date-box">
-
-                    <span>Date d'analyse</span>
-
-                    <input type="text" id="analysisDate" readonly>
-
-                </div>
-
-                <!-- HISTORY -->
-                <button type="button" class="history-btn" id="openHistory">
-
-                    🗂️
-
-                </button>
-
-            </div>
-
-        <!-- HEADER -->
-        <div class="header">
-
-            <div class="logo-box">
-                <img src="frontend/assets/hospital.png" alt="logo">
-            </div>
-
-            <div>
-                <h1>Centre de Prédiction Médicale</h1>
-                <p>Analyse intelligente des risques de maladies par IA</p>
-            </div>
-
+<!-- MODAL HISTORIQUE AVEC TABLEAU COMPLET -->
+<div class="history-modal" id="historyModal">
+    <div class="history-content">
+        <div class="history-header">
+            <h2>📋 Historique complet des analyses</h2>
+            <button class="close-history" id="closeHistory">✕</button>
         </div>
-
-        <!-- CARD -->
-        <div class="card">
-
-            <form>
-
-                <!-- PATIENT -->
-                <div class="section">
-
-                    <div class="section-header">
-                        <span class="section-icon">👤</span>
-                        <h2>Informations du patient</h2>
-                    </div>
-
-                    <div class="grid grid-4">
-
-                        <div class="input-group">
-                            <label>Nom</label>
-                            <input type="text" placeholder="Nom du patient">
-                        </div>
-
-                        <div class="input-group">
-                            <label>Prénom</label>
-                            <input type="text" placeholder="Prénom du patient">
-                        </div>
-
-                        <div class="input-group">
-
-                            <label>Sexe</label>
-
-                            <div class="custom-select" id="genderSelect">
-
-                                <div class="select-selected" id="selectedGender">
-                                    Sélectionner le sexe
-                                </div>
-
-                                <div class="select-options">
-
-                                    <div class="select-option">Masculin</div>
-
-                                    <div class="select-option">Féminin</div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div class="input-group">
-                            <label>Âge</label>
-                            <input type="number" placeholder="Ex : 25 ans">
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- PARAMETRES -->
-                <div class="section">
-
-                    <div class="section-header">
-                        <span class="section-icon">🩺</span>
-                        <h2>Paramètres cliniques</h2>
-                    </div>
-
-                    <div class="grid grid-3">
-
-                        <div class="input-group">
-                            <label>Température (°C)</label>
-                            <input type="number" step="0.1" placeholder="Ex : 38.5">
-                        </div>
-
-                        <div class="input-group">
-                            <label>Tension artérielle</label>
-                            <input type="text" placeholder="Ex : 12/8">
-                        </div>
-
-                        <div class="input-group">
-                            <label>Poids (kg)</label>
-                            <input type="number" placeholder="Ex : 70">
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- SYMPTOMES -->
-                <div class="section">
-
-                    <div class="section-header">
-                        <span class="section-icon">⚠️</span>
-                        <h2>Symptômes détectés</h2>
-                    </div>
-
-                    <div class="symptoms-container">
-
-                        <label class="symptom-pill">
-                            <input type="checkbox">
-                            <span>Fatigue</span>
-                        </label>
-
-                        <label class="symptom-pill">
-                            <input type="checkbox">
-                            <span>Fièvre</span>
-                        </label>
-
-                        <label class="symptom-pill">
-                            <input type="checkbox">
-                            <span>Toux</span>
-                        </label>
-
-                        <label class="symptom-pill">
-                            <input type="checkbox">
-                            <span>Maux de tête</span>
-                        </label>
-
-                        <label class="symptom-pill">
-                            <input type="checkbox">
-                            <span>Vomissements</span>
-                        </label>
-
-                        <label class="symptom-pill">
-                            <input type="checkbox">
-                            <span>Frissons</span>
-                        </label>
-
-                    </div>
-
-                </div>
-
-                <!-- BUTTON -->
-                <button type="submit">
-                    🧬 Lancer l’analyse médicale
-                </button>
-
-            </form>
-
-            <!-- RESULTATS -->
-            <div class="result-box">
-
-                <div class="result-header">
-
-                    <div>
-                        <h2>📊 Analyse prédictive</h2>
-                        <p>Résultats générés par Random Forest</p>
-                    </div>
-
-                    <div class="ai-badge">
-                        IA
-                    </div>
-
-                </div>
-
-                <!-- RESULT ITEM -->
-                <div class="disease">
-
-                    <div class="disease-info">
-                        <span>Fièvre</span>
-                        <span>24%</span>
-                    </div>
-
-                    <div class="progress">
-                        <div class="progress-fill low" style="width:24%;"></div>
-                    </div>
-
-                </div>
-
-                <div class="disease">
-
-                    <div class="disease-info">
-                        <span>Paludisme</span>
-                        <span>78%</span>
-                    </div>
-
-                    <div class="progress">
-                        <div class="progress-fill high" style="width:78%;"></div>
-                    </div>
-
-                </div>
-
-                <div class="disease">
-
-                    <div class="disease-info">
-                        <span>Grippe</span>
-                        <span>56%</span>
-                    </div>
-
-                    <div class="progress">
-                        <div class="progress-fill medium" style="width:56%;"></div>
-                    </div>
-
-                </div>
-
-                <div class="disease">
-
-                    <div class="disease-info">
-                        <span>Anémie</span>
-                        <span>12%</span>
-                    </div>
-
-                    <div class="progress">
-                        <div class="progress-fill low" style="width:12%;"></div>
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="table-container">
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Date/Heure</th><th>Nom</th><th>Prénom</th><th>Sexe</th><th>Âge</th>
+                        <th>Adresse</th><th>Téléphone</th><th>Taille(cm)</th><th>Temp(°C)</th>
+                        <th>Tension</th><th>Poids(kg)</th><th>Fièvre %</th><th>Paludisme %</th>
+                        <th>Grippe %</th><th>Anémie %</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody"></tbody>
+            </table>
         </div>
+    </div>
+</div>
 
+<!-- MODAL POUR UPDATE -->
+<div class="update-modal" id="updateModal">
+    <div class="update-modal-content">
+        <h3>✏️ Modifier la consultation</h3>
+        <form id="updateForm">
+            <input type="hidden" id="updateIdResultat">
+            <input type="hidden" id="updatePatientId">
+            <div class="input-group">
+                <label>Nom</label>
+                <input type="text" id="updateNom" required>
+            </div>
+            <div class="input-group">
+                <label>Prénom</label>
+                <input type="text" id="updatePrenom" required>
+            </div>
+            <div class="input-group">
+                <label>Sexe</label>
+                <select id="updateSexe">
+                    <option value="Masculin">Masculin</option>
+                    <option value="Féminin">Féminin</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Âge</label>
+                <input type="number" id="updateAge" required>
+            </div>
+            <div class="input-group">
+                <label>Adresse</label>
+                <input type="text" id="updateAdresse" placeholder="Adresse complète">
+            </div>
+            <div class="input-group">
+                <label>Téléphone</label>
+                <input type="tel" id="updateTelephone" placeholder="+221 77 123 45 67">
+            </div>
+            <div class="input-group">
+                <label>Taille (cm)</label>
+                <input type="number" id="updateTaille">
+            </div>
+            <div class="input-group">
+                <label>Température (°C)</label>
+                <input type="number" step="0.1" id="updateTemperature" required>
+            </div>
+            <div class="input-group">
+                <label>Tension artérielle</label>
+                <input type="number" id="updateTension" required>
+            </div>
+            <div class="input-group">
+                <label>Poids (kg)</label>
+                <input type="number" id="updatePoids" required>
+            </div>
+            <div class="modal-buttons">
+                <button type="submit" class="btn-save">💾 Enregistrer</button>
+                <button type="button" class="btn-cancel" id="closeUpdateModal">❌ Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="top-bar">
+        <div class="status">🟢 Système IA actif (Random Forest)</div>
+        <div class="top-right">
+            <div class="group-badge">🧠 Groupe 11</div>
+            <button type="button" class="theme-toggle" id="themeToggle">☀️</button>
+        </div>
     </div>
 
-    <script>
-        const customSelect = document.getElementById("genderSelect");
-        const selected = document.getElementById("selectedGender");
-        const toggleBtn = document.getElementById("themeToggle");
+    <div class="top-actions">
+        <div class="date-box">
+            <span>📅 Date d'analyse</span>
+            <input type="text" id="analysisDate" readonly>
+        </div>
+        <button type="button" class="history-btn" id="openHistory">🗂️ Voir historique</button>
+    </div>
 
-        /* LOAD SAVED THEME */
-        if(localStorage.getItem("theme") === "light"){
+    <div class="header">
+        <div class="logo-box"><img src="frontend/assets/hospital.png" alt="logo" onerror="this.style.display='none'">🏥</div>
+        <div><h1>Centre de Prédiction Médicale</h1><p>Analyse intelligente des risques • Ajout + tableau prédictif</p></div>
+    </div>
 
-            document.body.classList.add("light-mode");
+    <div class="card">
+        <div>
+            <form id="medicalForm">
+                <div class="section">
+                    <div class="section-header"><span class="section-icon">👤</span><h2>Informations patient</h2></div>
+                    <div class="grid grid-4">
+                        <div class="input-group"><label>Nom</label><input type="text" id="nom" placeholder="Nom" required></div>
+                        <div class="input-group"><label>Prénom</label><input type="text" id="prenom" placeholder="Prénom" required></div>
+                        <div class="input-group">
+                            <label>Sexe</label>
+                            <div class="custom-select" id="genderSelect">
+                                <div class="select-selected" id="selectedGender">Masculin</div>
+                                <div class="select-options">
+                                    <div class="select-option">Masculin</div>
+                                    <div class="select-option">Féminin</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Âge</label><input type="number" id="age" placeholder="Âge (ans)" required></div>
+                        <div class="input-group"><label>Adresse</label><input type="text" id="adresse" placeholder="Adresse complète"></div>
+                        <div class="input-group"><label>Téléphone</label><input type="tel" id="telephone" placeholder="+221 77 123 45 67"></div>
+                    </div>
+                </div>
 
-            toggleBtn.innerHTML = "🌙 ";
+                <div class="section">
+                    <div class="section-header"><span class="section-icon">🩺</span><h2>Paramètres cliniques</h2></div>
+                    <div class="grid grid-3">
+                        <div class="input-group"><label>Température (°C)</label><input type="number" step="0.1" id="temperature" placeholder="38.5" required></div>
+                        <div class="input-group"><label>Tension artérielle (systolique)</label><input type="number" id="tension_arterielle" placeholder="120" required></div>
+                        <div class="input-group"><label>Poids (kg)</label><input type="number" id="poids" placeholder="70" required></div>
+                        <div class="input-group"><label>Taille (cm)</label><input type="number" id="taille" placeholder="170"></div>
+                    </div>
+                </div>
 
-        }else{
+                <div class="section">
+                    <div class="section-header"><span class="section-icon">⚠️</span><h2>Symptômes détectés</h2></div>
+                    <div class="symptoms-container">
+                        <label class="symptom-pill"><input type="checkbox" id="fatigue"> <span>Fatigue</span></label>
+                        <label class="symptom-pill"><input type="checkbox" id="risque_fievre"> <span>Fièvre</span></label>
+                        <label class="symptom-pill"><input type="checkbox" id="toux"> <span>Toux</span></label>
+                        <label class="symptom-pill"><input type="checkbox" id="maux_tete"> <span>Maux de tête</span></label>
+                        <label class="symptom-pill"><input type="checkbox" id="vomissement"> <span>Vomissements</span></label>
+                        <label class="symptom-pill"><input type="checkbox" id="frissons"> <span>Frissons</span></label>
+                    </div>
+                </div>
 
-            toggleBtn.innerHTML = "☀️";
+                <div class="button-group">
+                    <button type="submit">🧬 Lancer l'analyse & Ajouter</button>
+                    <button type="button" class="reset-btn" id="resetFormBtn">🗑️ Reset formulaire</button>
+                </div>
+            </form>
+        </div>
 
+        <div class="result-box">
+            <div class="result-header">
+                <div><h2>📊 Analyse prédictive</h2><p>Pourcentages IA - Random Forest</p></div>
+                <div class="ai-badge">IA</div>
+            </div>
+            <div class="disease"><div class="disease-info"><span>🔥 Fièvre</span><span id="fievreValue">0%</span></div><div class="progress"><div class="progress-fill low" id="fievreBar" style="width:0%"></div></div></div>
+            <div class="disease"><div class="disease-info"><span>🦟 Paludisme</span><span id="paluValue">0%</span></div><div class="progress"><div class="progress-fill high" id="paluBar" style="width:0%"></div></div></div>
+            <div class="disease"><div class="disease-info"><span>🤧 Grippe</span><span id="grippeValue">0%</span></div><div class="progress"><div class="progress-fill medium" id="grippeBar" style="width:0%"></div></div></div>
+            <div class="disease"><div class="disease-info"><span>🩸 Anémie</span><span id="anemieValue">0%</span></div><div class="progress"><div class="progress-fill low" id="anemieBar" style="width:0%"></div></div></div>
+            <div id="diagnosticMessage" class="diagnostic-message"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let historiqueAnalyses = [];
+
+    function loadHistoryFromStorage() {
+        const stored = localStorage.getItem("medical_history_v2");
+        historiqueAnalyses = stored ? JSON.parse(stored) : [];
+        renderHistoryTable();
+    }
+
+    function saveHistoryToStorage() {
+        localStorage.setItem("medical_history_v2", JSON.stringify(historiqueAnalyses));
+    }
+
+    async function deleteConsultation(idResultat, rowIndex) {
+        if(confirm("Êtes-vous sûr de vouloir supprimer cette consultation ?")) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/consultation/${idResultat}`, { method: "DELETE" });
+                if(response.ok) {
+                    historiqueAnalyses.splice(rowIndex, 1);
+                    saveHistoryToStorage();
+                    renderHistoryTable();
+                    alert("✅ Consultation supprimée avec succès !");
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Erreur: ${error.error}`);
+                }
+            } catch(error) {
+                console.error("Erreur DELETE:", error);
+                alert("❌ Erreur lors de la suppression");
+            }
+        }
+    }
+
+    function openUpdateModal(record, rowIndex) {
+        document.getElementById("updateIdResultat").value = record.id;
+        document.getElementById("updatePatientId").value = record.patientId || "";
+        document.getElementById("updateNom").value = record.nom;
+        document.getElementById("updatePrenom").value = record.prenom;
+        document.getElementById("updateSexe").value = record.sexe;
+        document.getElementById("updateAge").value = record.age;
+        document.getElementById("updateAdresse").value = record.adresse || "";
+        document.getElementById("updateTelephone").value = record.telephone || "";
+        document.getElementById("updateTaille").value = record.taille || "";
+        document.getElementById("updateTemperature").value = record.temperature;
+        document.getElementById("updateTension").value = record.tension;
+        document.getElementById("updatePoids").value = record.poids;
+        document.getElementById("updateModal").dataset.rowIndex = rowIndex;
+        document.getElementById("updateModal").classList.add("active");
+    }
+
+    async function updateConsultation(event) {
+        event.preventDefault();
+        const patientId = document.getElementById("updatePatientId").value;
+        const updateData = {
+            nom: document.getElementById("updateNom").value,
+            prenom: document.getElementById("updatePrenom").value,
+            sexe: document.getElementById("updateSexe").value,
+            age: parseInt(document.getElementById("updateAge").value),
+            adresse: document.getElementById("updateAdresse").value,
+            telephone: document.getElementById("updateTelephone").value,
+            taille: document.getElementById("updateTaille").value ? parseInt(document.getElementById("updateTaille").value) : null,
+            temperature: parseFloat(document.getElementById("updateTemperature").value),
+            tension_arterielle: parseInt(document.getElementById("updateTension").value),
+            poids: parseInt(document.getElementById("updatePoids").value)
+        };
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/api/consultation/${patientId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updateData)
+            });
+            if(response.ok) {
+                const rowIndex = parseInt(document.getElementById("updateModal").dataset.rowIndex);
+                historiqueAnalyses[rowIndex] = { ...historiqueAnalyses[rowIndex], ...updateData };
+                saveHistoryToStorage();
+                renderHistoryTable();
+                alert("✅ Consultation mise à jour avec succès !");
+                closeUpdateModal();
+                await loadHistoryFromBackend();
+            } else {
+                const error = await response.json();
+                alert(`❌ Erreur: ${error.error}`);
+            }
+        } catch(error) {
+            console.error("Erreur UPDATE:", error);
+            alert("❌ Erreur lors de la mise à jour");
+        }
+    }
+
+    function closeUpdateModal() {
+        document.getElementById("updateModal").classList.remove("active");
+    }
+
+    function renderHistoryTable() {
+        const tbody = document.getElementById("historyTableBody");
+        if(!tbody) return;
+        tbody.innerHTML = "";
+        if(historiqueAnalyses.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="16" style="text-align:center">Aucune analyse enregistrée. Effectuez une prédiction.</td></tr>`;
+            return;
+        }
+        historiqueAnalyses.forEach((rec, index) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = rec.date;
+            row.insertCell(1).innerText = rec.nom || "—";
+            row.insertCell(2).innerText = rec.prenom || "—";
+            row.insertCell(3).innerText = rec.sexe || "—";
+            row.insertCell(4).innerText = rec.age || "—";
+            row.insertCell(5).innerText = rec.adresse || "—";
+            row.insertCell(6).innerText = rec.telephone || "—";
+            row.insertCell(7).innerText = rec.taille ? rec.taille + " cm" : "—";
+            row.insertCell(8).innerText = rec.temperature ? rec.temperature + "°C" : "—";
+            row.insertCell(9).innerText = rec.tension || "—";
+            row.insertCell(10).innerText = rec.poids ? rec.poids + " kg" : "—";
+            row.insertCell(11).innerText = (rec.fievre !== undefined && rec.fievre !== null) ? rec.fievre + "%" : "0%";
+            row.insertCell(12).innerText = (rec.paludisme !== undefined && rec.paludisme !== null) ? rec.paludisme + "%" : "0%";
+            row.insertCell(13).innerText = (rec.grippe !== undefined && rec.grippe !== null) ? rec.grippe + "%" : "0%";
+            row.insertCell(14).innerText = (rec.anemie !== undefined && rec.anemie !== null) ? rec.anemie + "%" : "0%";
+            const actionsCell = row.insertCell(15);
+            actionsCell.className = "action-buttons";
+            actionsCell.innerHTML = `
+                <button class="btn-update" onclick='openUpdateModal(${JSON.stringify(rec).replace(/'/g, "&#39;")}, ${index})'>✏️ Modifier</button>
+                <button class="btn-delete" onclick="deleteConsultation(${rec.id}, ${index})">🗑️ Supprimer</button>
+            `;
+        });
+    }
+
+    function updateProgressBarsFromBackend(data) {
+        const fievre = data.predictions?.fievre || data.risque_fievre || 0;
+        const paludisme = data.predictions?.paludisme || data.risque_paludisme || 0;
+        const grippe = data.predictions?.grippe || data.risque_grippe || 0;
+        const anemie = data.predictions?.anemie || data.risque_anemie || 0;
+        
+        document.getElementById("fievreValue").innerText = fievre + "%";
+        document.getElementById("paluValue").innerText = paludisme + "%";
+        document.getElementById("grippeValue").innerText = grippe + "%";
+        document.getElementById("anemieValue").innerText = anemie + "%";
+        
+        document.getElementById("fievreBar").style.width = fievre + "%";
+        document.getElementById("paluBar").style.width = paludisme + "%";
+        document.getElementById("grippeBar").style.width = grippe + "%";
+        document.getElementById("anemieBar").style.width = anemie + "%";
+        
+        document.getElementById("fievreBar").className = "progress-fill " + (fievre > 60 ? "high" : fievre > 30 ? "medium" : "low");
+        document.getElementById("paluBar").className = "progress-fill " + (paludisme > 60 ? "high" : paludisme > 30 ? "medium" : "low");
+        document.getElementById("grippeBar").className = "progress-fill " + (grippe > 60 ? "high" : grippe > 30 ? "medium" : "low");
+        document.getElementById("anemieBar").className = "progress-fill " + (anemie > 60 ? "high" : anemie > 30 ? "medium" : "low");
+        
+        const diagnosticDiv = document.getElementById("diagnosticMessage");
+        if(data.message) {
+            diagnosticDiv.innerHTML = `<strong>📋 Diagnostic:</strong> ${data.message}`;
+            diagnosticDiv.style.display = "block";
+        } else {
+            diagnosticDiv.style.display = "none";
+        }
+    }
+
+    function resetFormFields() {
+        document.getElementById("nom").value = "";
+        document.getElementById("prenom").value = "";
+        document.getElementById("age").value = "";
+        document.getElementById("adresse").value = "";
+        document.getElementById("telephone").value = "";
+        document.getElementById("temperature").value = "";
+        document.getElementById("tension_arterielle").value = "";
+        document.getElementById("poids").value = "";
+        document.getElementById("taille").value = "";
+        document.getElementById("selectedGender").innerText = "Masculin";
+        ["fatigue", "risque_fievre", "toux", "maux_tete", "vomissement", "frissons"].forEach(id => {
+            document.getElementById(id).checked = false;
+        });
+    }
+
+    function getCurrentDateTime() {
+        const now = new Date();
+        return `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+    }
+
+    function updateDateTimeInput() {
+        document.getElementById("analysisDate").value = getCurrentDateTime();
+    }
+
+    const modal = document.getElementById("historyModal");
+    document.getElementById("openHistory").addEventListener("click", () => {
+        renderHistoryTable();
+        modal.classList.add("active");
+    });
+    document.getElementById("closeHistory").addEventListener("click", () => modal.classList.remove("active"));
+    modal.addEventListener("click", (e) => { if(e.target === modal) modal.classList.remove("active"); });
+
+    const toggleBtn = document.getElementById("themeToggle");
+    if(localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light-mode");
+        toggleBtn.innerHTML = "🌙";
+    }
+    toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("light-mode");
+        localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
+        toggleBtn.innerHTML = document.body.classList.contains("light-mode") ? "🌙" : "☀️";
+    });
+
+    const genderSelect = document.getElementById("genderSelect");
+    const selectedGenderSpan = document.getElementById("selectedGender");
+    document.querySelectorAll(".select-option").forEach(opt => {
+        opt.addEventListener("click", () => {
+            selectedGenderSpan.innerText = opt.innerText;
+            genderSelect.classList.remove("active");
+        });
+    });
+    genderSelect.addEventListener("click", (e) => { e.stopPropagation(); genderSelect.classList.toggle("active"); });
+    window.addEventListener("click", () => genderSelect.classList.remove("active"));
+
+    document.getElementById("resetFormBtn").addEventListener("click", () => {
+        resetFormFields();
+        const btn = document.getElementById("resetFormBtn");
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "✅ Réinitialisé !";
+        setTimeout(() => btn.innerHTML = originalText, 1500);
+    });
+
+    setInterval(updateDateTimeInput, 1000);
+    updateDateTimeInput();
+
+    async function loadHistoryFromBackend() {
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/consultations");
+            if(response.ok) {
+                const consultations = await response.json();
+                if(consultations && consultations.length > 0) {
+                    historiqueAnalyses = consultations.map(consult => ({
+                        id: consult.id_resultat,
+                        patientId: consult.patient?.id,
+                        date: consult.date || new Date().toLocaleString(),
+                        nom: consult.patient?.nom || "—",
+                        prenom: consult.patient?.prenom || "—",
+                        sexe: consult.patient?.sexe || "—",
+                        age: consult.parametres?.age || "—",
+                        adresse: consult.patient?.adresse || "—",
+                        telephone: consult.patient?.telephone || "—",
+                        taille: consult.parametres?.taille || null,
+                        temperature: consult.parametres?.temperature || null,
+                        tension: consult.parametres?.tension_arterielle || "—",
+                        poids: consult.parametres?.poids || null,
+                        fievre: consult.risque_fievre || 0,
+                        paludisme: consult.risque_paludisme || 0,
+                        grippe: consult.risque_grippe || 0,
+                        anemie: consult.risque_anemie || 0,
+                        diagnostic: consult.diagnostic || ""
+                    }));
+                    saveHistoryToStorage();
+                    renderHistoryTable();
+                }
+            }
+        } catch(error) {
+            console.log("Backend indisponible, utilisation localStorage");
+        }
+    }
+
+    const form = document.getElementById("medicalForm");
+    form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = "⏳ Analyse en cours...";
+        submitBtn.disabled = true;
+
+        const payload = {
+            nom: document.getElementById("nom").value.trim(),
+            prenom: document.getElementById("prenom").value.trim(),
+            sexe: document.getElementById("selectedGender").innerText,
+            age: parseInt(document.getElementById("age").value),
+            adresse: document.getElementById("adresse").value.trim(),
+            telephone: document.getElementById("telephone").value.trim(),
+            temperature: parseFloat(document.getElementById("temperature").value),
+            tension_arterielle: parseInt(document.getElementById("tension_arterielle").value),
+            poids: parseInt(document.getElementById("poids").value),
+            taille: document.getElementById("taille").value ? parseInt(document.getElementById("taille").value) : null,
+            fatigue: document.getElementById("fatigue").checked,
+            frissons: document.getElementById("frissons").checked,
+            toux: document.getElementById("toux").checked,
+            maux_tete: document.getElementById("maux_tete").checked,
+            vomissement: document.getElementById("vomissement").checked,
+            risque_fievre: document.getElementById("risque_fievre").checked
+        };
+
+        if(!payload.nom || !payload.prenom || isNaN(payload.age) || isNaN(payload.temperature) || isNaN(payload.poids)) {
+            alert("Veuillez remplir tous les champs obligatoires (Nom, Prénom, Âge, Température, Poids)");
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            return;
         }
 
-        /* TOGGLE THEME */
-        toggleBtn.addEventListener("click", () => {
-
-            document.body.classList.toggle("light-mode");
-
-            if(document.body.classList.contains("light-mode")){
-
-                localStorage.setItem("theme", "light");
-
-                toggleBtn.innerHTML = "🌙";
-
-            }else{
-
-                localStorage.setItem("theme", "dark");
-
-                toggleBtn.innerHTML = "☀️";
-
-            }
-
-        });
-
-        customSelect.addEventListener("click", () => {
-            customSelect.classList.toggle("active");
-        });
-
-        document.querySelectorAll(".select-option").forEach(option => {
-
-            option.addEventListener("click", () => {
-
-                selected.innerHTML = option.innerHTML;
-
+        try {
+            const response = await fetch("http://127.0.0.1:5000/api/consultation", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
             });
 
-        });
-
-        window.addEventListener("click", (e) => {
-
-            if(!customSelect.contains(e.target)){
-                customSelect.classList.remove("active");
+            if(!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const result = await response.json();
+            console.log("Réponse backend:", result);
+            
+            if(result.status === "success") {
+                updateProgressBarsFromBackend(result);
+                alert(`✅ Analyse terminée !\n${result.message}`);
+                resetFormFields();
+                await loadHistoryFromBackend();
+            } else {
+                throw new Error("Format de réponse invalide");
             }
-
-        });
-
-        /* DATE AUTO */
-        function updateDateTime(){
-
-            const now = new Date();
-
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-
-            const formatted =
-            `${day}/${month}/${year} ${hours}:${minutes}`;
-
-            document.getElementById("analysisDate").value = formatted;
+        } catch(error) {
+            console.error("Erreur API:", error);
+            alert(`❌ Erreur: ${error.message}\nVérifiez que le backend Flask est démarré sur le port 5000`);
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         }
+    });
 
-        updateDateTime();
+    document.getElementById("updateForm").addEventListener("submit", updateConsultation);
+    document.getElementById("closeUpdateModal").addEventListener("click", closeUpdateModal);
+    window.addEventListener("click", (e) => {
+        if(e.target === document.getElementById("updateModal")) closeUpdateModal();
+    });
 
-        const historyModal =
-        document.getElementById("historyModal");
-
-        document
-        .getElementById("openHistory")
-        .addEventListener("click", () => {
-
-            historyModal.classList.add("active");
-
-        });
-
-        document
-        .getElementById("closeHistory")
-        .addEventListener("click", () => {
-
-            historyModal.classList.remove("active");
-
-        });
-
-    </script>
-
+    loadHistoryFromStorage();
+    loadHistoryFromBackend();
+    setInterval(() => loadHistoryFromBackend(), 30000);
+</script>
 </body>
 </html>
